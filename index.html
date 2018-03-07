@@ -18,12 +18,30 @@
 <div id="app">
     <div class="header">
         <h1>Vue.js Poster Store</h1>
+        <form class="searchbar" @submit.prevent="onSubmit">
+            <input placeholder="Search for posters" v-model="newSearch">
+            <input type="submit" value="Search" class="btn">
+        </form>
     </div>
     <div class="main">
         <div class="products">
+            <div v-if="loading">
+                Loading...
+            </div>
+            <div class="search-results" v-else="!loading">
+                Found {{ items.length }} results for search term {{ lastSearch }}.
+            </div>
             <div class="product" v-for="(item, index) in items">
-                <h4 class="product-title">{{item.title}}</h4>
-                <button class="add-to-cart" @click="addItem(index)">Add to cart</button>
+                <div>
+                    <div class="product-image">
+                        <img v-bind:src="item.link">
+                    </div>
+                </div>
+                <div>
+                    <h4 class="product-title">{{item.title}}</h4>
+                    <p>Price: <strong>{{ price | currency}}</strong></p>
+                    <button class="add-to-cart btn" @click="addItem(index)">Add to cart</button>
+                </div>
             </div>
         </div>
         <div class="cart">
@@ -36,10 +54,12 @@
                     <button class="btn" @click="dec(item)">-</button>
                 </li>
             </ul>
-            <div v-if="cart.length">
-                <div>Total: {{total | currency}}</div>
-            </div>
-            <div v-else class="empty-cart">
+            <transition name="fade">
+                <div v-if="cart.length">
+                    <div>Total: {{total | currency}}</div>
+                </div>
+            </transition>
+            <div v-if="cart.length === 0" class="empty-cart">
                 No items in the cart.
             </div>
         </div>
@@ -49,6 +69,7 @@
 <!-- Scripts -->
 <script src="reload/reload.js"></script>
 <script src="node_modules/vue/dist/vue.js"></script>
+<script src="node_modules/vue-resource/dist/vue-resource.js"></script>
 <script type="text/javascript" src="public/script.js"></script>
 
 
